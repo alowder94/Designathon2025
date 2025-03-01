@@ -4,20 +4,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # using dataset directly form sklearn
-from sklearn.datasets import load_breast_cancer
+from sklearn.datasets import load_iris
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report
 
 #Using Keras here -- keras is a user friendly API built on top of Tensorflow. It provides users with a way to build a model using features of TF, without having to fully implement the backwards passes, loss functions, etc. Also offers native support for things like Early Stopping to avoid overtraining
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.callbacks import EarlyStopping
+from keras.utils import to_categorical
 
 
 #Importing this dataset and reading in as dataframe directly from sklearn
-dataset = load_breast_cancer()
+dataset = load_iris()
 
 # Scikit learn exposes this dataset in a format that isn't necessarilly compatible with pandas/keras/tensorflow...so pulling the data and formatting here
 df = pd.DataFrame(dataset['data'], columns=dataset['feature_names'])
@@ -33,6 +34,10 @@ y = dataset['target']
 # Splitting into train and testing datasets, with corresponding target sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=101)
 
+# Used to convert to "one hot encoding" of labels ie [0, 1, 0] would indicate the second option is true
+y_train = to_categorical(y_train, num_classes=3)
+y_test = to_categorical(y_test, num_classes=3)
+
 # Initializing Scaler - used to scale all of the data to roughly the same range - helps with accuracy of the data
 scaler = MinMaxScaler()
 
@@ -43,16 +48,18 @@ X_test = scaler.transform(X_test)
 # Initialize model - here we are using a sequential model...meaning that inputs are put through our model layers in a sequential fashion. Think from layer a
 model = Sequential()
 # https://www.geeksforgeeks.org/activation-functions-neural-networks
+model.add(Dense(40, activation="relu"))
+model.add(Dropout(rate=0.4))
 model.add(Dense(30, activation="relu"))
 model.add(Dropout(rate=0.3))
 model.add(Dense(20, activation="relu"))
 model.add(Dropout(rate=0.2))
 model.add(Dense(10, activation="relu"))
 model.add(Dropout(rate=0.1))
-model.add(Dense(1, activation="sigmoid")) #Output layer - using sigmoid function to return probability of positive classification -- this is becuase this is a binary classification -- meaning we are essentially looking for a 1/0, or true/false output from this model
+model.add(Dense(3, activation="softmax")) #Output layer - using sigmoid function to return probability of positive classification -- this is becuase this is a binary classification -- meaning we are essentially looking for a 1/0, or true/false output from this model
 
 # Loss function - difference between the output of the model and the expected result || optimizer is how the model will adjust the parameters (train itsself) each iteration
-model.compile(loss="binary_crossentropy", optimizer="adam")
+model.compile(loss="categorical_crossentropy", optimizer="adam")
 
 epochCount = 3000
 patience = 25
@@ -73,4 +80,3 @@ plt.show()
 # Performing our own test here...not needed but we are going to use these values for out classification report and out confusion matrix
 predictions = (model.predict(X_test) >= 0.5).astype("int32")
 print(classification_report(y_test, predictions))
-print(confusion_matrix(y_test, predictions))
