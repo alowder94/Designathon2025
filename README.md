@@ -3,7 +3,7 @@
 ## Instructions
 I have included all necessary code and data to run this project. On your machine, you will need to have python v3.0+ and pip installed. Personally I am running 3.11 - I can guarantee it works on that version. It _should_ work on any version 3.0+, but cannot promise as that has not been tested.
 
-In a terminal (command prompt / iterm / git bash / terminal etc), run `pip install -r requirements.txt` from either the `/neuralNetowrk` directory, or the `/regression` directory (depending on which project you are trying to run) to install all software required for the app. 
+In a terminal (command prompt / iterm / git bash / terminal etc), run `pip install -r requirements.txt` from either the `/neuralNetowrk` directory, or the `/regression` directory (depending on which project you are trying to run) to install all software required for the app. Alternatively - you can install the parentRequirements.txt from the root (the main level of this directory), and in that case you would install all software required for both projects
 
 I personally would recommend doing these installs in a [virtual environment](https://docs.python.org/3/library/venv.html) for isolation from the rest of your machine (this installs all required software in this same directory to avoid version conflicts, and to make cleanup simple for memory conservation)
 
