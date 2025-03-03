@@ -56,15 +56,14 @@ model.add(Dense(20, activation="relu"))
 model.add(Dropout(rate=0.2))
 model.add(Dense(10, activation="relu"))
 model.add(Dropout(rate=0.1))
-model.add(Dense(3, activation="softmax")) #Output layer - using sigmoid function to return probability of positive classification -- this is becuase this is a binary classification -- meaning we are essentially looking for a 1/0, or true/false output from this model
+model.add(Dense(3, activation="softmax")) #Output layer - using softmax function to return probability of positive classification over a set of multple possible values (in this case 3 possible values)
 
 # Loss function - difference between the output of the model and the expected result || optimizer is how the model will adjust the parameters (train itsself) each iteration
 model.compile(loss="categorical_crossentropy", optimizer="adam")
 
-epochCount = 3000
-patience = 25
+epochCount = 3000 # number of times it is going to iterate over the traning process
+patience = 25 # Setting for how long it is going to "tolerate" no improvement (or minimal improvement) before triggering the early stop
 
-#Loss == observed loss on training data || Val_Loss == observed loss on testing data (data not used to train the model / data the model has never "seen" )
 # Defining our early stop - we set a monitor, mode, and patience (how many "failing" epocs before triggering early stop) -- setting verbose here to basically show each epoch...
 early_stop = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=patience)
 
@@ -75,8 +74,11 @@ model.fit(x=X_train, y=y_train, epochs=epochCount, validation_data=(X_test, y_te
 losses = pd.DataFrame(model.history.history)
 losses.plot()
 plt.title("Losses Over Time")
+#Loss == observed loss on training data || Val_Loss == observed loss on testing data (data not used to train the model / data the model has never "seen" )
+# Show the graph we have created over the past couple lines of code
 plt.show()
 
-# Performing our own test here...not needed but we are going to use these values for out classification report and out confusion matrix
+# Performing our own test here...not needed but we are going to use these values for our classification report
 predictions = (model.predict(X_test) >= 0.5).astype("int32")
+# Printing our classificaion report -- read more here: https://medium.com/@kohlishivam5522/understanding-a-classification-report-for-your-machine-learning-model-88815e2ce397
 print(classification_report(y_test, predictions))
