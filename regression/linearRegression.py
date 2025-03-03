@@ -25,11 +25,12 @@ print(df.info()) # Columns/data types, num of rows
 print(df.describe()) # Stats - mean, std, max, min
 
 # Data Analysis -- trying to understand the data and relationships within
-# sns.displot(df['Price']) # This will show distribution of data
-# sns.heatmap(df.drop("Address", axis=1).corr(), annot=True) # Shows heatmap of correlations within our dataset
+# sns.displot(df['Price']) # This will show distribution of data -- specifically the distribution of house prices
+# sns.heatmap(df.drop("Address", axis=1).corr(), annot=True) # Shows heatmap of correlations within our dataset -- lets us find "hotspots"
 # plt.show()
 
 # Next clean data - in this case remove address column - and split columns into the target variable (what you are trying to predict) and the features you are using to predict
+# Removing address here because unless I want to do some complex geolocation type work for this, the words present in an address are arbitrary to the prediction of the houses price point
 X = df[df.drop(["Address", "Price"], axis=1).columns] #Data Frame of all columns you are using for your prediction
 Y = df['Price'] # DataFrame of values you are trying to predict -- target values
 
@@ -40,10 +41,10 @@ lm = LinearRegression()
 lm.fit(x_train, y_train)
 
 #Looking at different attributes of the model - showing intercept and coefficients here
-print(lm.intercept_) # Shows correlation?
-print(lm.coef_) # Shows correlation per attribute
+print(lm.intercept_)
+print(lm.coef_) 
 
-#Create DF out of coefficients for analysis - basically trying to see what the cause/effect ratio is for each datapoint. Attempt to see what is important in the data and what is not
+#Create DF out of coefficients for analysis - basically trying to see what the cause/effect ratio is for each datapoint. Attempt to see what is important in the data and what is not -- another way to do this would be Principal Component Analysis
 cdf = pd.DataFrame(lm.coef_, index=X.columns, columns=['Coeff']) 
 print("Coefficient Analysis: {}".format(cdf)) #So based off of this coefficient analysis - you can say that using this Linear Regression model, a 1 unit increase to Area Income in associated with a 21.5 unit increase in Price
 
@@ -56,7 +57,7 @@ sns.displot(y_test - predictions) # This is going to show residuals - which is b
 # plt.scatter(y_test, predictions) #This would show a scatterplot of the same data, basically showing test against predictions
 plt.show()
 
-# Now that we have our model, you can calculate Mean Absolute Error, Mean Squared Error, and Root Mean Squared Error
+# Now that we have our model, you can calculate Mean Absolute Error, Mean Squared Error, and Root Mean Squared Error -- read more here: https://medium.com/analytics-vidhya/mae-mse-rmse-coefficient-of-determination-adjusted-r-squared-which-metric-is-better-cd0326a5697e
 print("Mean Absolute Error: {}".format(metrics.mean_absolute_error(y_test, predictions)))
 print("Mean Squared Error: {}".format(metrics.mean_squared_error(y_test, predictions)))
 print("Root Mean Squared Error: {}".format(np.sqrt(metrics.mean_squared_error(y_test, predictions)))) # There is no root mean squared error method, so you just calculate this yourself
